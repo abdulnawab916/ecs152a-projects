@@ -1,4 +1,4 @@
-# Importing the needed libraries
+3# Importing the needed libraries
 import socket
 import time
 
@@ -22,7 +22,7 @@ client_addr = None
 # Start receiving data
 while True:
     data, addr = sock.recvfrom(BUFFER_SIZE)
-    
+
     # Store client address
     # If no client address, then assign the client address
     # To what was recieved

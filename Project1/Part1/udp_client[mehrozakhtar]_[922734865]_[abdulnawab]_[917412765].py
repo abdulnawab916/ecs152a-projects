@@ -49,6 +49,8 @@ print(f"Client IP: {UDP_IP}")
 print(f"Client Port: {UDP_PORT}")
 print(f"Timestamp (Start of Transmission): {client_timestamp:.6f} seconds\n")
 
+
+print(f"\nSending data to server! Wait until the transmission is complete...")
 # Start the timer
 start_time = time.time()
 
