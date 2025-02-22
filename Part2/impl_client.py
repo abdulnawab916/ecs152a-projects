@@ -3,27 +3,21 @@
 import socket, json
 import sys
 
-# Addresses
+# Proxy addresses
 proxy_ip = "127.0.0.1"
 proxy_port = 9000 # Proxy is port 9000
-
-# The message you want to send over
-msg = ""
+msg = "" # Initialize the message you want to send over
 
 # ERROR CHECKING: Check if the user input is a 4 character string
 if len(sys.argv) == 2 and len(sys.argv[1]) == 4:
     # Parse the argument message
     msg = sys.argv[1]
 else:
-    print("CLIENT: Usage: python impl_client.py (4 char string)")
+    print("[CLIENT] Usage: python impl_client.py (4 char string)")
     sys.exit(1)
-
-# Need to error check the input if its a 4 character string
-# EX: python impl_client.py bruh
 
 # Create TCP client socket
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
 
 # Try Catch here to handle connection errors
 try:
@@ -42,12 +36,13 @@ try:
     # Need to encode the data to send it over, 
     # We're basically getting the data DICT and converting it to json format
     # Then, encode to bytes and SEND
-    client_socket.sendall((json.dumps(data)).encode())
-
+    sendresponse = json.dumps(data)
+    client_socket.sendall(sendresponse.encode())
+    print(f"\n[CLIENT] Sending response: {sendresponse}")
 
     # RECEIVE response from PROXY
     response = client_socket.recv(4096).decode()
-    print(f"CLIENT: Received from PROXY: {response}")
+    print(f"\n✅[CLIENT] Received from PROXY: {response}")
 
 # Close
 finally:

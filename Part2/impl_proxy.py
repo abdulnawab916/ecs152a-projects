@@ -17,7 +17,6 @@ def handle_client(client_socket):
     data = client_socket.recv(4096).decode()
 
     # Parse JSON data from the client
-
     # What we need to do?
     # Get the server_ip, server_port, and message from the json data
         # Because we need to send it to server through this proxy
@@ -27,9 +26,9 @@ def handle_client(client_socket):
     message = jsonDATA['message']
 
     # Print the JSON data request
-    print(f"PROXY: Received from CLIENT: {jsonDATA}")
+    print(f"\n✅[PROXY] Received from CLIENT: {jsonDATA}")
 
-    # TODO: Check Blocked IP's. If IP is blocked, return error message to the client
+    # ERROR: Check Blocked IP's. If IP is blocked, return error message to the client
     if server_ip in blocked_ips:
         error = json.dumps({"error": "Blocked IP"})
 
@@ -40,19 +39,24 @@ def handle_client(client_socket):
 
 
     # SERVER ---------
+    # Add proxy IP to the json data to send
+    jsonDATA["proxy_ip"] = proxy_host
+    jsonDATA["proxy_port"] = proxy_port
+
     # Forward to server
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.connect((server_ip, server_port))
-    server_socket.sendall(json.dumps({"message": message}).encode())
+    server_socket.sendall(json.dumps(jsonDATA).encode())
+    print(f"[PROXY] Forwarded to SERVER: {jsonDATA}")
 
     # Receive from server
     server_response = server_socket.recv(4096).decode()
-    print(f"PROXY: Received from SERVER: {server_response}")
+    print(f"[PROXY] Received from SERVER: {server_response}")
 
     # CLIENT ---------
     # Forward to client
     client_socket.sendall(server_response.encode())
-    print(f"PROXY: Forwarded to CLIENT: {server_response}")
+    print(f"[PROXY] Forwarded to CLIENT: {server_response}")
 
     # ----------------
     # Close all the sockets
@@ -60,14 +64,21 @@ def handle_client(client_socket):
     client_socket.close()
 
 # MAIN METHOD
+# Using the proxy template as a guide
 def main():
     proxy_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     proxy_socket.bind((proxy_host, proxy_port))
     proxy_socket.listen(5)
+    print(f"[PROXY] LISTENING on {proxy_host}:{proxy_port}")
 
+    # If press ctrl+c, make sure it stops the program?
+
+    # Always on
     while True:
         client_socket, addr = proxy_socket.accept()
         handle_client(client_socket)
+
+
 
 if __name__ == '__main__':
     main()
